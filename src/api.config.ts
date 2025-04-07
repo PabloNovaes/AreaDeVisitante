@@ -1,3 +1,8 @@
+interface Props {
+    body?: string;
+    headers?: Record<string, string>
+}
+
 const debug = false
 
 const environment = [
@@ -11,17 +16,20 @@ const environment = [
 
 const BASE_URL = debug ? environment : "https://app.applivo.com.br/api_2_0/index.php"
 
-const headers = {
+export const BASE_HEADERS = {
     "Content-Type": "application/json",
     "redirect": "visita",
     "Authorization": "hash"
 }
 
-export const callApi = async (method: 'GET' | 'POST', body: string) => {
+export const callApi = async (method: 'GET' | 'POST', { body, headers }: Props) => {
     const req = await fetch(BASE_URL, {
         method,
-        headers,
-        body
+        body,
+        headers: {
+            ...BASE_HEADERS,
+            ...(headers && headers)
+        }
     })
     const res = await req.json()
     return res

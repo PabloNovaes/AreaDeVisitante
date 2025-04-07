@@ -1,153 +1,234 @@
-import robot_logo from "@/../public/ico.svg";
-import logo from "@/../public/letter-logo.svg";
-import lgpd from "@/assets/LGPD.png";
+"use client"
 
-import { Copyright, Envelope, InstagramLogo, WhatsappLogo } from "@phosphor-icons/react";
-import { motion } from "motion/react";
-import { LoginForm } from "../components/features/login-form";
+import { callApi } from "@/api.config"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { SaveButton } from "@/components/ui/save-button"
+import { containerVariants, itemVariants } from "@/moiton.config"
+import { errorToastDispatcher } from "@/utils/error-toast-dispatcher"
+import { formatCPF, formatInput } from "@/utils/formatters"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Eye, EyeSlash, LockKey, UserCircle } from "@phosphor-icons/react"
+import { RadioGroup, RadioGroupItem } from "@radix-ui/react-radio-group"
+import { motion } from "framer-motion"
+import c from "js-cookie"
+import { type ChangeEvent, useState, useTransition } from "react"
+import { useForm } from "react-hook-form"
+import { Link, useNavigate } from "react-router-dom"
+import * as z from "zod"
 
-import { Link } from "react-router-dom";
-import { cn } from "../lib/utils";
+export const radioStyles =
+  "text-sm border rounded-full p-2 bg-[#181818]/60 px-5 cursor-pointer transition-all data-[state=checked]:border-[#5c307e] data-[state=checked]:ring-[#5c307e]/40 data-[state=checked]:ring-[3px]"
 
 export function Login() {
+  const [loading, startTransition] = useTransition()
+  const [showPass, setShowPass] = useState(false)
+  const [isForeign, setIsForeign] = useState(false)
+
+  const nav = useNavigate()
+
+  const formSchema = z.object({
+    isForeign: z.enum(["true", "false"], { message: "Deve selecionar uma das opções" }),
+    document: z.string({ message: "O documento é obrigatório" }).superRefine((val, ctx) => {
+      if (isForeign) {
+        const passportRegex = /^[A-Z]{1,2}[0-9]{6,9}$/i
+        if (!passportRegex.test(val)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Formato de passaporte inválido",
+          })
+        }
+      } else {
+        const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/
+        if (!cpfRegex.test(val)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "CPF deve estar no formato 123.456.789-10",
+          })
+        }
+      }
+    }),
+    password: z.string({ message: "Senha é obrigatoria" }).nonempty(),
+  })
+
+  type UserFormValue = z.infer<typeof formSchema>
+
+  const form = useForm<UserFormValue>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      isForeign: "false",
+    },
+  })
+
+  const onSubmit = async () => {
+    startTransition(async () => {
+      try {
+        const { document, password, isForeign } = form.getValues()
+
+        const body = JSON.stringify({
+          request: "login_visita",
+          senha: password,
+          tipo: 1,
+          ...(isForeign === "true" ? { passaporte: document } : { cpf: document.replace(/\D/g, "") }),
+        })
+        const data = await callApi("POST", { body })
+
+        if (!data["RESULT"]) throw new Error(data["INFO"] || data["MSG"])
+
+        c.set("token", data["TOKEN"])
+        nav("/home")
+      } catch (err) {
+        errorToastDispatcher(err)
+      }
+    })
+  }
+
   return (
-    <main>
-      <div className='grid-cols-1 h-svh relative flex flex-col justify-start lg:grid lg:max-w-none lg:grid-cols-3 lg:px-0'>
-        <div className='col-span-2 bg-muted relative h-full flex-col p-10 text-white hidden lg:flex border-r'>
-          <div className="absolute z-[1] inset-0 [background:url('https://novo.convitelivo.com.br/assets/bg-mobile-1nd9Mw97.svg')_center_top/cover]" />
-          <div className="absolute z-[2] left-0 bottom-0 h-full w-full bg-gradient-to-t from-background to-[#5c307e]/30"></div>
-          <div className='relative z-20 flex items-center text-lg font-medium'>
-            <img src={logo} alt="letter-logo" className="h-5 opacity-55" />
+    <>
+      <div className="flex h-full items-center px-4 lg:p-8 relative z-10 max-w-[450px]">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="mx-auto flex w-full flex-col justify-center space-y-6"
+        >
+          <div className="flex flex-col gap-5">
+            <motion.h1 variants={itemVariants} className="text-4xl font-bold tracking-tight">
+              Preencha o formulario a baixo para acessar area de visitante
+            </motion.h1>
           </div>
-          <div className='relative z-20 mt-auto hidden lg:grid'>
-            <blockquote className='space-y-2'>
-              <p className='text-lg max-w-[900px]'>
-                &ldquo;Já nos chamaram de Super App. Até mesmo ganhamos o título de Condotech. Para o íntimos 'Livinho'. Nossa missão é conectar o seu condomínio.&rdquo;
-              </p>
-              <footer className='text-sm'>Livo App</footer>
-            </blockquote>
-          </div>
-        </div>
-        <div className='flex h-full justify-center px-6 relative'>
-          <LoginForm />
-          <div className="absolute inset-0 overflow-hidden">
-            <motion.div
-              initial={{ opacity: 0, filter: "brightness(.7)" }}
-              animate={{
-                opacity: [0, 6, 0.8],
-                filter: "blur(100px)",
-              }}
-              transition={{ duration: 0.5 }}
-              className="bg-cover absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-purple-500/20 to-blue-500/10 rounded-full blur-3xl"
-            />
-            <motion.div
-              initial={{ opacity: 0, filter: "brightness(.7)" }}
-              animate={{
-                opacity: [0, 6, 0.8],
-                filter: "blur(100px)",
-              }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-cover absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-purple-500/20 to-violet-500/10 rounded-full blur-3xl"
-            />
-            {/* <img src={outline_logo} className="absolute w-[300px] top-[10%] -right-1/3 z-20" /> */}
-          </div>
-        </div>
 
-      </div>
-      <footer
-        id="footer"
-        className={cn("no-print border-t text-primary bg-[#121212]")}
-      >
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 gap-8 text-center sm:grid-cols-3 lg:grid-cols-5 sm:text-left">
-            <div className="space-y-3">
-              <div className="font-regular flex flex-col items-center sm:items-start gap-2">
-                <img
-                  src={robot_logo}
-                  alt="logo"
-                  className="w-fit h-15 relative object-contain"
+          <Form {...form}>
+            <motion.form
+              variants={containerVariants}
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="w-full space-y-4 font-medium"
+            >
+              <FormField
+                control={form.control}
+                name="isForeign"
+                render={({ field }) => (
+                  <FormItem>
+                    <motion.div variants={itemVariants}>
+                      <FormLabel>Você é estrangeiro?</FormLabel>
+                    </motion.div>
+                    <FormControl>
+                      <motion.div variants={itemVariants}>
+                        <RadioGroup
+                          required
+                          onValueChange={(value) => {
+                            field.onChange(value)
+                            setIsForeign(value === "true")
+                            form.setValue("document", "")
+                          }}
+                          defaultValue={field.value}
+                          className="flex gap-2"
+                        >
+                          <RadioGroupItem className={radioStyles} value="true">
+                            Sim
+                          </RadioGroupItem>
+                          <RadioGroupItem className={radioStyles} value="false">
+                            Não
+                          </RadioGroupItem>
+                        </RadioGroup>
+                      </motion.div>
+                    </FormControl>
+                    <FormMessage className="text-xs font-light" />
+                  </FormItem>
+                )}
+              />
+
+              <motion.div variants={itemVariants}>
+                <FormField
+                  control={form.control}
+                  name="document"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center relative">
+                        <FormControl>
+                          <Input
+                            className="h-12 rounded-xl bg-[#181818]/60 font-light text-sm indent-[26px]"
+                            type="text"
+                            placeholder={`Digite seu ${form.watch("isForeign") === "true" ? "passaporte (ex: AB123456)" : "CPF (ex: 123.456.789-10)"}`}
+                            disabled={loading}
+                            value={field.value}
+                            maxLength={!isForeign ? 14 : 12}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                              formatInput(e, !isForeign ? formatCPF : (value) => value.toUpperCase())
+                              form.setValue("document", e.target.value)
+                            }}
+                          />
+                        </FormControl>
+                        <UserCircle weight="fill" size={22} className="absolute left-3 text-[#6a6a6a]" />
+                      </div>
+                      <FormMessage className="text-xs font-light" />
+                    </FormItem>
+                  )}
                 />
-                <h2 className="font-bold text-md">Livo App</h2>
-              </div>
-              <p className="text-sm text-primary/60">Modulos que conectam</p>
-            </div>
-            <div className="space-y-3 flex flex-col">
-              <h2 className="text-sm font-semibold">Contato</h2>
-              <ul className="flex justify-center sm:justify-start space-x-2 text-sm">
-                <li>
-                  <button
-                    className="size-11 grid place-content-center rounded-full border bg-[#181818] border-zinc-700 text-primary/60 hover:bg-[#46c254] hover:text-white transition-all duration-300"
-                  >
-                    <Link
-                      to={`https://api.whatsapp.com/send/?phone=5511940437904&text=Ol%C3%A1%2C+gostaria+de+conhecer+melhor+a+plataforma+Livo&type=phone_number&app_absent=0`}
-                      target="_blank"
-                    >
-                      <WhatsappLogo weight="duotone" size={24} />
-                    </Link>
-                  </button>
-                </li>
-                <li>
-                  <button
-                    className="size-11 grid place-content-center rounded-full border bg-[#181818] border-zinc-700 text-primary/60 hover:bg-gradient-to-b from-[#833ab4] via-[#fd1d1d]/90 to-[#fcb045] hover:text-white transition-all duration-300"
-                  >
-                    <Link
-                      to="https://www.instagram.com/livoapp/"
-                      target="_blank"
-                    >
-                      <InstagramLogo weight="duotone" size={24} />
-                    </Link>
-                  </button>
-                </li>
-                <li>
-                  <button
-                    className="size-11 grid place-content-center rounded-full border bg-[#181818] border-zinc-700 text-primary/60 hover:bg-[#e34134] hover:text-white transition-all duration-300"
-                  >
-                    <Link to="mailto:contato@livoapp.com.br" target="_blank">
-                      <Envelope weight="duotone" size={24} />
-                    </Link>
-                  </button>
-                </li>
-              </ul>
-            </div>
-            <div className="space-y-3 flex flex-col">
-              <h2 className="text-sm font-semibold">Informações legais</h2>
-              <ul className="space-y-2 text-sm">
-                {/* <li>
-                  <Link to="/termos-de-uso" target="_top" className="text-primary/60 hover:text-white transition-colors duration-200">
-                    Termos de uso
-                  </Link>
-                </li> */}
-                <li>
-                  <Link
-                    to="/politica-de-privacidade"
-                    target="_top"
-                    className="text-primary/60 hover:text-white transition-colors duration-200"
-                  >
-                    Politica de privacidade
-                  </Link>
-                </li>
-                <li className="flex justify-center sm:justify-start">
-                  <div className=" rounded-xl px-1 w-28 ">
-                    <img src={lgpd} />
-                  </div>
-                </li>
-              </ul>
-            </div>
+              </motion.div>
 
-          </div>
-          <div className="mt-8 pt-8 border-t flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-primary/60">
-            <div className="flex items-center gap-2 justify-center sm:justify-start w-full sm:w-auto whitespace-nowrap">
-              <Copyright size={16} />
-              <span>{new Date().getFullYear()} Livo App</span>
-            </div>
-            <div className="flex flex-wrap justify-center sm:justify-end gap-x-4 gap-y-2 text-center w-full sm:w-auto">
-              <span>CNPJ: 40.008.355/0001-41</span>
-              <span className="hidden sm:inline">|</span>
-              <span>LIVO TECNOLOGIA DA INFORMACAO LTDA</span>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </main>
+              <motion.div variants={itemVariants}>
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center relative">
+                        <FormControl>
+                          <Input
+                            className="h-12 rounded-xl bg-[#181818]/60 font-light text-sm indent-[26px]"
+                            type={!showPass ? "password" : "text"}
+                            placeholder="Digite sua senha"
+                            autoComplete="new-password"
+                            disabled={loading}
+                            {...field}
+                          />
+                        </FormControl>
+                        <LockKey weight="fill" size={20} className="absolute left-3 text-[#6a6a6a]" />
+                        <button
+                          role="button"
+                          type="button"
+                          className="absolute right-3"
+                          onClick={() => setShowPass((prev) => !prev)}
+                        >
+                          {showPass ? (
+                            <Eye size={20} className="text-[#6a6a6a]" />
+                          ) : (
+                            <EyeSlash size={20} className="text-[#6a6a6a]" />
+                          )}
+                        </button>
+                      </div>
+                      <FormMessage className="text-xs font-light" />
+                      <Link to={"/recuperar-senha"} className="text-sm font-airbnb font-light underline">
+                        Recuperar senha
+                      </Link>
+                    </FormItem>
+                  )}
+                />
+              </motion.div>
+
+              <motion.div variants={itemVariants}>
+                <SaveButton content="Entrar" state={loading ? "loading" : "initial"} />
+              </motion.div>
+            </motion.form>
+          </Form>
+
+          <motion.p
+            variants={itemVariants}
+            className="text-muted-foreground px-2.5 text-center text-sm font-light [&_a]:font-light"
+          >
+            Ao clicar em entrar, você concorda com nossos{" "}
+            <a className="hover:text-primary underline underline-offset-1" href="/terms">
+              Termos de uso
+            </a>{" "}
+            e{" "}
+            <a className="hover:text-primary underline underline-offset-1" href="/privacy">
+              Politica de privacidade
+            </a>
+          </motion.p>
+        </motion.div>
+      </div>
+    </>
   )
 }
+

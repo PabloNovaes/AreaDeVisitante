@@ -12,6 +12,7 @@
 @font-face {
   font-family: "Airbnb";
   src: url("./assets/airbnb/AirbnbCereal_W_Lt.otf") format("opentype");
+  font-weight: 300;
 }
 @font-face {
   font-family: "Airbnb";
