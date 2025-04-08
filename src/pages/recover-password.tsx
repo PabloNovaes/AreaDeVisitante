@@ -119,7 +119,7 @@ export function RecoverPassword() {
 
         if (!visitorData) {
             return (
-                <motion.div key="document-verification" variants={containerVariants} initial="hidden" animate="show">
+                <motion.div key="document-verification" className="grid gap-5" variants={containerVariants} initial="hidden" animate="show">
                     <div className="flex flex-col gap-5">
                         <motion.img
                             variants={itemVariants} initial='hidden' animate='show' exit='hidden'
@@ -208,7 +208,7 @@ export function RecoverPassword() {
         }
 
         return (
-            <motion.div key="pin-delivery-method" variants={containerVariants} initial="hidden" animate="show">
+            <motion.div key="pin-delivery-method" className="grid gap-5" variants={containerVariants} initial="hidden" animate="show">
                 <div className="flex flex-col gap-5">
                     <motion.img
                         variants={itemVariants} initial='hidden' animate='show' exit='hidden'
@@ -224,7 +224,7 @@ export function RecoverPassword() {
                     <motion.form
                         variants={containerVariants}
                         onSubmit={baseForm.handleSubmit(onSubmit)}
-                        className="w-full space-y-4"
+                        className="w-full space-y-4 grid gap-5"
                     >
                         <motion.div className="mt-3" variants={itemVariants} initial='hidden' animate='show' exit='hidden'>
                             <FormField
