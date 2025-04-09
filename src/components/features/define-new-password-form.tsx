@@ -54,12 +54,12 @@ export function DefineNewPasswordForm({ keyUser }: { keyUser: string }) {
     const handleSubmit = (values: RecoverPassValue) => {
         startTransition(async () => {
             try {
-                const body = JSON.stringify({
+                const body = {
                     request: "set_nova_senha_login_visita",
                     visita: keyUser,
                     pin: values.otp,
                     senha: values.password,
-                })
+                }
 
                 const data = await callApi("POST", { body })
 
@@ -138,6 +138,8 @@ export function DefineNewPasswordForm({ keyUser }: { keyUser: string }) {
                                         minLength={6}
                                         autoComplete="new-password"
                                         onChange={(e) => {
+                                            console.log(e);
+
                                             field.onChange(e)
                                             handlePasswordChange(e)
                                         }}

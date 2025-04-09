@@ -1,3 +1,4 @@
+import { UserContextProvider } from "@/context/user-context";
 import { BaseLayout } from "@/layout/base";
 import { FormLayout } from "@/layout/form-layout";
 import { Login } from "@/pages/login";
@@ -11,7 +12,11 @@ export function Router() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<BaseLayout />}>
+                <Route path="/" element={
+                    <UserContextProvider>
+                        <BaseLayout />
+                    </UserContextProvider>
+                }>
                     <Route path="/" element={<FormLayout />}>
                         <Route path="/" element={
                             <ProtectedRoute>

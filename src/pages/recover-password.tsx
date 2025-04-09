@@ -75,10 +75,10 @@ export function RecoverPassword() {
         startTransition(async () => {
             const { docType, document } = form.getValues()
             try {
-                const body = JSON.stringify({
+                const body = {
                     request: "get_rec_senha_login_visita",
                     ...(docType === "cpf" ? { cpf: document.replace(/\D/g, "") } : { passporte: document }),
-                })
+                }
 
                 const data = await callApi("POST", { body })
 
@@ -94,10 +94,10 @@ export function RecoverPassword() {
         const { type } = baseForm.getValues()
         startTransition(async () => {
             try {
-                const body = JSON.stringify({
+                const body = {
                     request: type === "telefone" ? "get_pin_rec_senha_wpp" : "get_pin_rec_senha_email",
-                    visita: visitorData?.PRIVATE_KEY_VISITA,
-                })
+                    visita: visitorData?.PRIVATE_KEY_VISITA as string,
+                }
                 const data = await callApi("POST", { body, headers: { Authorization: "hash" } })
 
                 if (!data["RESULT"]) throw new Error(data["INFO"] || data["MSG"])
@@ -224,7 +224,7 @@ export function RecoverPassword() {
                     <motion.form
                         variants={containerVariants}
                         onSubmit={baseForm.handleSubmit(onSubmit)}
-                        className="w-full space-y-4 grid gap-5"
+                        className="w-full grid gap-5"
                     >
                         <motion.div className="mt-3" variants={itemVariants} initial='hidden' animate='show' exit='hidden'>
                             <FormField

@@ -8,7 +8,7 @@ import { Link, Outlet } from "react-router-dom";
 
 export function BaseLayout() {
     return (
-        <main className="min-h-svh">
+        <main className="min-h-svh grid">
             <Outlet />
             <footer
                 id="footer"

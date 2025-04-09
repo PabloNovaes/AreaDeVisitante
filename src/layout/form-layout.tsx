@@ -5,7 +5,7 @@ import { Outlet } from "react-router-dom";
 
 export function FormLayout() {
     return (
-        <div className='grid-cols-1 h-full relative flex flex-col justify-start lg:grid lg:max-w-none lg:grid-cols-3 lg:px-0'>
+        <div className='min-h-svh relative flex flex-col justify-stretch lg:grid lg:max-w-none lg:grid-cols-3 lg:px-0'>
             <div className='col-span-2 bg-muted relative h-full flex-col p-10 text-white hidden lg:flex border-r'>
                 <div className="absolute z-[1] inset-0 [background:url('https://novo.convitelivo.com.br/assets/bg-mobile-1nd9Mw97.svg')_center_top/cover]" />
                 <div className="absolute z-[2] left-0 bottom-0 h-full w-full bg-gradient-to-t from-background to-[#5c307e]/30"></div>
@@ -21,7 +21,8 @@ export function FormLayout() {
                     </blockquote>
                 </div>
             </div>
-            <div className='flex h-full justify-center px-6 relative'>
+
+            <div className='flex h-full justify-center p-6 relative'>
                 <Outlet />
                 <div className="absolute inset-0 overflow-hidden">
                     <motion.div

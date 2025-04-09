@@ -1,5 +1,5 @@
 interface Props {
-    body?: string;
+    body?: Record<string, string | number | boolean>;
     headers?: Record<string, string>
 }
 
@@ -25,7 +25,7 @@ export const BASE_HEADERS = {
 export const callApi = async (method: 'GET' | 'POST', { body, headers }: Props) => {
     const req = await fetch(BASE_URL, {
         method,
-        body,
+        body: JSON.stringify(body),
         headers: {
             ...BASE_HEADERS,
             ...(headers && headers)

@@ -1,39 +1,43 @@
 import { callApi } from "@/api.config";
-import c from 'js-cookie';
+import { useUser } from "@/hooks/use-user";
+import { errorToastDispatcher } from "@/utils/error-toast-dispatcher";
+import c from "js-cookie";
 import { ReactNode, useEffect, useTransition } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
+
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {
-    const [loading, startTransition] = useTransition()
+    const [loading, start] = useTransition()
+
+    const { data, setData } = useUser()
+    const { pathname } = useLocation()
+
     const nav = useNavigate()
 
-    const token = c.get("token");
-
     useEffect(() => {
-        const verifyToken = async () => {
-            startTransition(async () => {
+        start(async () => {
+            const token = c.get("token")
+            if (!data && token) {
                 try {
-                    if (!token) throw new Error("No token");
+                    const body = { request: "get_perfil_visitante", tipo: "2" }
+                    const res = await callApi("POST", { body: body, headers: { Authorization: `Bearer ${token}` } })
 
-                    const data = await callApi("POST", {
-                        body: JSON.stringify({ request: "meus_recorrentes" }),
-                        headers: {
-                            "Authorization": `Bearer ${token}`,
-                        }
-                    })
+                    if (!res["RESULT"]) throw new Error(res["INFO"] || res["MSG"])
 
-                    console.log(data);
-
+                    setData({ ...res, TOKEN: token })
+                    nav('/home')
                 } catch (err) {
                     console.log(err);
-                    nav("/")
+                    errorToastDispatcher(err)
                 }
-            })
-        }
-        verifyToken()
+            }
+        })
+
     }, [])
 
-    if (loading) return null;
+    if (loading) return <main className="h-svh bg-black" />
+
+    if (!data && pathname !== "/") return <Navigate to={"/"} />
 
     return children;
 }

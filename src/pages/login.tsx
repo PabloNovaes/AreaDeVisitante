@@ -1,9 +1,9 @@
-"use client"
-
+import logo from "@/../public/letter-logo.svg"
 import { callApi } from "@/api.config"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { SaveButton } from "@/components/ui/save-button"
+import { useUser } from "@/hooks/use-user"
 import { containerVariants, itemVariants } from "@/moiton.config"
 import { errorToastDispatcher } from "@/utils/error-toast-dispatcher"
 import { formatCPF, formatInput } from "@/utils/formatters"
@@ -24,7 +24,9 @@ export function Login() {
   const [loading, startTransition] = useTransition()
   const [showPass, setShowPass] = useState(false)
   const [isForeign, setIsForeign] = useState(false)
+  const { setData } = useUser()
 
+  // const { setData } = useUser()
   const nav = useNavigate()
 
   const formSchema = z.object({
@@ -65,17 +67,25 @@ export function Login() {
       try {
         const { document, password, isForeign } = form.getValues()
 
-        const body = JSON.stringify({
+        const body = {
           request: "login_visita",
           senha: password,
           tipo: 1,
           ...(isForeign === "true" ? { passaporte: document } : { cpf: document.replace(/\D/g, "") }),
-        })
+        }
+
         const data = await callApi("POST", { body })
 
         if (!data["RESULT"]) throw new Error(data["INFO"] || data["MSG"])
 
         c.set("token", data["TOKEN"])
+        const getUserBody = { request: "get_perfil_visitante", tipo: "2" }
+
+        const getUserData = await callApi("POST", { body: getUserBody, headers: { Authorization: `Bearer ${data["TOKEN"]}` } })
+
+        if (!getUserData["RESULT"]) throw new Error(getUserData["INFO"] || getUserData["MSG"])
+
+        setData({ ...getUserData, TOKEN: data["TOKEN"] })
         nav("/home")
       } catch (err) {
         errorToastDispatcher(err)
@@ -85,7 +95,7 @@ export function Login() {
 
   return (
     <>
-      <div className="flex h-full items-center px-4 lg:p-8 relative z-10 max-w-[450px]">
+      <div className="flex h-full items-center p-4 relative z-10 max-w-[450px]">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -93,6 +103,20 @@ export function Login() {
           className="mx-auto flex w-full flex-col justify-center space-y-6"
         >
           <div className="flex flex-col gap-5">
+            <motion.img
+              variants={itemVariants} initial='hidden' animate={{
+                opacity: .4,
+                y: 0,
+                transition: {
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 24,
+                },
+              }} exit='hidden'
+              src={logo || "/placeholder.svg"}
+              alt="letter-logo"
+              className="h-3 w-fit lg:hidden"
+            />
             <motion.h1 variants={itemVariants} className="text-4xl font-bold tracking-tight">
               Preencha o formulario a baixo para acessar area de visitante
             </motion.h1>
