@@ -40,6 +40,19 @@ export const formatCPF = (value: string) => {
             if (p4) result += `-${p4}`
             return result
         })
+
+}
+
+export const isToday = (day: string) => {
+    const today = new Date().toLocaleDateString("pt-BR", { weekday: "long" })
+    return day.toLowerCase() === today
+}
+
+export const formatTimeRange = (startTime: string, endTime: string) => {
+    if (startTime === "Closed" || endTime === "Closed") {
+        return "Closed"
+    }
+    return `${startTime} - ${endTime}`
 }
 
 export const getUsDate = (date: string) => {

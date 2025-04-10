@@ -1,8 +1,8 @@
-import { userContext } from "@/context/user-context";
+import { authContext } from "@/context/auth-context";
 import { useContext } from "react";
 
-export const useUser = () => {
-    const context = useContext(userContext);
+export const useAuth = () => {
+    const context = useContext(authContext);
     if (!context) {
         throw new Error("useUser deve ser usado dentro de um InviteProvider");
     }

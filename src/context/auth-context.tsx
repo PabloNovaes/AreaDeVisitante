@@ -10,16 +10,17 @@ type UserProps = {
     TOKEN: string
 }
 
-interface UserContextProps {
+interface AuthContextProps {
     data: UserProps
     setData: (data: UserProps | null) => void
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const userContext = createContext<UserContextProps | undefined>(undefined)
+export const authContext = createContext<AuthContextProps | undefined>(undefined)
 
-export function UserContextProvider({ children }: { children: ReactNode }) {
+export function AuthContextProvider({ children }: { children: ReactNode }) {
     const [data, setData] = useState<null | UserProps>(null)
+    console.log(data);
 
     useEffect(() => {
         const token = c.get("token")
@@ -29,8 +30,8 @@ export function UserContextProvider({ children }: { children: ReactNode }) {
     }, [])
 
     return (
-        <userContext.Provider value={{ data: data as UserProps, setData }}>
+        <authContext.Provider value={{ data: data as UserProps, setData }}>
             {children}
-        </userContext.Provider>
+        </authContext.Provider>
     )
 }

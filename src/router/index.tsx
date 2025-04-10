@@ -1,4 +1,4 @@
-import { UserContextProvider } from "@/context/user-context";
+import { AuthContextProvider } from "@/context/auth-context";
 import { BaseLayout } from "@/layout/base";
 import { FormLayout } from "@/layout/form-layout";
 import { Login } from "@/pages/login";
@@ -13,9 +13,9 @@ export function Router() {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={
-                    <UserContextProvider>
+                    <AuthContextProvider>
                         <BaseLayout />
-                    </UserContextProvider>
+                    </AuthContextProvider>
                 }>
                     <Route path="/" element={<FormLayout />}>
                         <Route path="/" element={

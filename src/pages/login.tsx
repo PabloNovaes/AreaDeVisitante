@@ -3,7 +3,7 @@ import { callApi } from "@/api.config"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { SaveButton } from "@/components/ui/save-button"
-import { useUser } from "@/hooks/use-user"
+import { useAuth } from "@/hooks/use-auth"
 import { containerVariants, itemVariants } from "@/moiton.config"
 import { errorToastDispatcher } from "@/utils/error-toast-dispatcher"
 import { formatCPF, formatInput } from "@/utils/formatters"
@@ -24,9 +24,9 @@ export function Login() {
   const [loading, startTransition] = useTransition()
   const [showPass, setShowPass] = useState(false)
   const [isForeign, setIsForeign] = useState(false)
-  const { setData } = useUser()
+  const { setData } = useAuth()
 
-  // const { setData } = useUser()
+  // const { setData } = useAuth()
   const nav = useNavigate()
 
   const formSchema = z.object({
