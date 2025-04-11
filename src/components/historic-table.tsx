@@ -78,7 +78,7 @@ export function DataTable({ data, currentAdress }: DataTableProps) {
         </CardTitle>
         <CardDescription>Visualize e gerencie os registros de acesso ao condomínio.</CardDescription>
       </CardHeader>
-      {/* <div className="border-b border-zinc-800">
+       <div className="border-b border-zinc-800">
         <div className={`px-6 py-4 flex items-center gap-3 ${currentAdress?.RESULT ? "bg-emerald-950/20" : "bg-red-950/20"}`}>
           {currentAdress?.RESULT ? (
             <>
@@ -102,7 +102,7 @@ export function DataTable({ data, currentAdress }: DataTableProps) {
             </>
           )}
         </div>
-      </div> */}
+      </div> 
       <CardContent className="flex flex-col">
         <div className="flex flex-row gap-2 mb-6">
           <div className="relative flex-1 bg-[#202020]">
