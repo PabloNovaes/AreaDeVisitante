@@ -1,3 +1,5 @@
+import { Historical } from "@/types/data"
+
 export const MOCK_ADRESSES = [
     {
         "RESULT": "true",
@@ -52,57 +54,6 @@ export const MOCK_ADRESSES = [
     },
     {
         "RESULT": "true",
-        "CONDOMINIO": "LIVO APLICATIVO",
-        "ENDERECO": "RUA, CONFIANCA, 10",
-        "VISITA": [
-            {
-                "RESULT": "true",
-                "DIA": "Domingo",
-                "FAIXA": "",
-                "STATUS": false
-            },
-            {
-                "RESULT": "true",
-                "DIA": "Segunda-feira",
-                "FAIXA": "00:00 às 00:30",
-                "STATUS": true
-            },
-            {
-                "RESULT": "true",
-                "DIA": "Terça-feira",
-                "FAIXA": "",
-                "STATUS": false
-            },
-            {
-                "RESULT": "true",
-                "DIA": "Quarta-feira",
-                "FAIXA": "",
-                "STATUS": false
-            },
-            {
-                "RESULT": "true",
-                "DIA": "Quinta-feira",
-                "FAIXA": "",
-                "STATUS": false
-            },
-            {
-                "RESULT": "true",
-                "DIA": "Sexta-feira",
-                "FAIXA": "00:00 às 23:45",
-                "STATUS": true
-            },
-            {
-                "RESULT": "true",
-                "DIA": "Sábado",
-                "FAIXA": "",
-                "STATUS": false
-            }
-        ],
-        "KEY": "",
-        "BOTAO": false
-    },
-    {
-        "RESULT": "true",
         "CONDOMINIO": "CONDOMINIO EDIFICIO PLAZA ALPHAVILLE",
         "ENDERECO": "MEZANINO, JHAMAL NATURAL / VISSTAS LOFT, MZ2",
         "VISITA": [
@@ -154,20 +105,45 @@ export const MOCK_ADRESSES = [
     }
 ]
 
-export const MOCK_ACCESS_HISTORICAL = [
-
+export const MOCK_ACCESS_HISTORICAL: Historical[] = [
     {
         "RESULT": "true",
         "EVENTO": null,
         "ANFITRIAO": "Alexandre Santos",
         "DATA_CONVITE": null,
         "HORA_CONVITE": null,
-        "ADIANTADO": "2025-04-10 01:29:15",
-        "ATRASADO": "2025-04-10 13:29:15",
-        "STATUS_ANTECIPACAO": "3",
-        "DESC_STATUS": "ENTROU",
+        "ADIANTADO": "2025-04-11 07:52:08",
+        "ATRASADO": "2025-04-11 16:52:08",
+        "STATUS_ANTECIPACAO": "1",
+        "DESC_STATUS": "AUTORIZADO",
+        "NOME_CONDOMINIO": "LIVO APLICATIVO",
+        "ENDERECO": "RUA, CONFIANCA, 10"
+    },
+    {
+        "RESULT": "true",
+        "EVENTO": null,
+        "ANFITRIAO": "Alexandre Santos",
+        "DATA_CONVITE": null,
+        "HORA_CONVITE": null,
+        "ADIANTADO": "2025-04-10 11:27:53",
+        "ATRASADO": "2025-04-10 23:27:53",
+        "STATUS_ANTECIPACAO": "4",
+        "DESC_STATUS": "SAIU",
         "NOME_CONDOMINIO": "CONDOMINIO EDIFICIO PLAZA ALPHAVILLE",
         "ENDERECO": "MEZANINO, JHAMAL NATURAL / VISSTAS LOFT, MZ2"
+    },
+    {
+        "RESULT": "true",
+        "EVENTO": null,
+        "ANFITRIAO": "Jonathan Alves",
+        "DATA_CONVITE": null,
+        "HORA_CONVITE": null,
+        "ADIANTADO": "2025-04-10 07:22:22",
+        "ATRASADO": "2025-04-10 16:22:22",
+        "STATUS_ANTECIPACAO": "1",
+        "DESC_STATUS": "AUTORIZADO",
+        "NOME_CONDOMINIO": "LIVO APLICATIVO",
+        "ENDERECO": "RUA, SANTOS, 10"
     },
     {
         "RESULT": "true",

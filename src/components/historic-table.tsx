@@ -3,28 +3,43 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { MOCK_ACCESS_HISTORICAL } from "@/mocks"
-import { AlertCircle, ArrowUpDown, ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react"
+import { Adress, Historical } from "@/types/data"
+import { AlertCircle, ChevronLeft, ChevronRight, Search, SlidersHorizontal } from "lucide-react"
 import { useState } from "react"
+import { Input } from "./ui/input"
 
-type Historical = typeof MOCK_ACCESS_HISTORICAL[0]
 
 interface DataTableProps {
-  data: typeof MOCK_ACCESS_HISTORICAL
+  data: Historical[]
+  currentAdress: Adress
 }
 
-export function DataTable({ data }: DataTableProps) {
+export function DataTable({ data, currentAdress }: DataTableProps) {
   const [currentPage, setCurrentPage] = useState(1)
   const [statusFilter, setStatusFilter] = useState("all")
   const [sortField, setSortField] = useState<keyof Historical | null>(null)
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
+  const [searchTerm, setSearchTerm] = useState("")
+
+
   const itemsPerPage = 5
 
-  const totalPages = Math.ceil(data.length / itemsPerPage)
-  const startIndex = (currentPage - 1) * itemsPerPage
-  const paginatedData = data.slice(startIndex, startIndex + itemsPerPage)
+  // const filteredData = data.filter(({ DESC_STATUS }) => statusFilter === 'all' ? DESC_STATUS : DESC_STATUS === statusFilter)
 
-  // Handle sorting
+
+  const filteredData = data.filter((item) => {
+    const matchesSearch =
+      String(item.ANFITRIAO).toLowerCase().includes(searchTerm.toLowerCase())
+
+    const matchesStatus = statusFilter === "all" || String(item.DESC_STATUS).toLowerCase() === statusFilter.toLowerCase()
+
+    return matchesSearch && matchesStatus
+  })
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage)
+
   const handleSort = (field: keyof Historical) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc")
@@ -34,8 +49,28 @@ export function DataTable({ data }: DataTableProps) {
     }
   }
 
+  const highlightMatch = (text: string, query: string) => {
+    if (!query.trim()) return text
+
+    const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi")
+    const parts = text.split(regex)
+
+    return parts.map((part, index) =>
+      regex.test(part) ? (
+        <span key={index} className="bg-violet-300/80 font-medium">
+          {part}
+        </span>
+      ) : (
+        <span key={index}>{part}</span>
+      ),
+    )
+  }
+
+  console.log(currentAdress);
+
+
   return (
-    <Card className="w-full shadow-lg sm:flex lg:col-span-2">
+    <Card className="w-full rounded-2xl shadow-lg sm:flex lg:col-span-2">
       <CardHeader className="pb-3">
         <CardTitle className="text-xl flex items-center gap-2">
           <SlidersHorizontal className="h-5 w-5" />
@@ -43,21 +78,45 @@ export function DataTable({ data }: DataTableProps) {
         </CardTitle>
         <CardDescription>Visualize e gerencie os registros de acesso ao condomínio.</CardDescription>
       </CardHeader>
-      <CardContent>
-        {/* Filters */}
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
-          {/* <div className="relative flex-1">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+      {/* <div className="border-b border-zinc-800">
+        <div className={`px-6 py-4 flex items-center gap-3 ${currentAdress?.RESULT ? "bg-emerald-950/20" : "bg-red-950/20"}`}>
+          {currentAdress?.RESULT ? (
+            <>
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100">
+                <ShieldCheck className="h-5 w-5 text-emerald-600" />
+              </div>
+              <div>
+                <h3 className="text-sm font-medium text-emerald-400">Acesso Permitido</h3>
+                <p className="text-xs text-zinc-400">Você tem permissão para acessar este condomínio</p>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
+                <ShieldAlert className="h-5 w-5 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-sm font-medium text-red-400">Acesso Negado</h3>
+                <p className="text-xs text-zinc-400">Você não tem permissão para acessar este condomínio</p>
+              </div>
+            </>
+          )}
+        </div>
+      </div> */}
+      <CardContent className="flex flex-col">
+        <div className="flex flex-row gap-2 mb-6">
+          <div className="relative flex-1 bg-[#202020]">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground placeholder:truncate" />
             <Input
-              placeholder="Buscar por anfitrião, condomínio ou status..."
-              className="pl-8 font-light text-sm"
+              placeholder="Buscar por anfitrião"
+              className="pl-8 text-[13px] font-medium"
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value)
                 setCurrentPage(1) // Reset to first page on search
               }}
             />
-          </div> */}
+          </div>
           <Select
             value={statusFilter}
             onValueChange={(value) => {
@@ -65,14 +124,13 @@ export function DataTable({ data }: DataTableProps) {
               setCurrentPage(1) // Reset to first page on filter change
             }}
           >
-            <SelectTrigger className="w-full md:w-[180px] bg-[#202020]">
+            <SelectTrigger className="text-[13px] font-medium w-fit bg-[#202020]">
               <SelectValue placeholder="Filtrar por status" />
             </SelectTrigger>
             <SelectContent className="bg-[#181818]">
-              <SelectItem value="all">Todos os status</SelectItem>
-              <SelectItem value="entrou">Entrou</SelectItem>
-              <SelectItem value="saiu">Saiu</SelectItem>
-              <SelectItem value="autorizado">Autorizado</SelectItem>
+              <SelectItem value="all">Todos</SelectItem>
+              <SelectItem value="SAIU">Saiu</SelectItem>
+              <SelectItem value="AUTORIZADO">Autorizado</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -83,34 +141,49 @@ export function DataTable({ data }: DataTableProps) {
             <Table className="bg-[#141414] rounded-xl">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="hidden lg:table-cell">Condomínio</TableHead>
-                  <TableHead className="cursor-pointer" onClick={() => handleSort("ANFITRIAO")}>
+                  <TableHead>Condomínio</TableHead>
+                  <TableHead className="cursor-pointer hidden sm:table-cell" onClick={() => handleSort("ANFITRIAO")}>
                     <div className="flex items-center">
                       Anfitrião
-                      <ArrowUpDown className="ml-1 h-4 w-4" />
                     </div>
                   </TableHead>
-                  <TableHead className="w-[100px] cursor-pointer" onClick={() => handleSort("RESULT")}>
+                  <TableHead className="cursor-pointer text-left" onClick={() => handleSort("RESULT")}>
+                    Quando
+                  </TableHead>
+                  <TableHead className="cursor-pointer" onClick={() => handleSort("RESULT")}>
                     <div className="flex items-center">
                       Status
-                      <ArrowUpDown className="ml-1 h-4 w-4" />
                     </div>
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {paginatedData.length > 0 ? (
-                  paginatedData.map((item, indx) => (
-                    <TableRow key={indx}>
-                      <TableCell className="hidden lg:table-cell text-muted-foreground">
-                        {item.NOME_CONDOMINIO}
-                      </TableCell>
-                      <TableCell className="font-medium">{item.ANFITRIAO}</TableCell>
-                      <TableCell>
-                        <Badge className="text-xs" variant={item.DESC_STATUS as CustomVariants}>{item.DESC_STATUS}</Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))
+                  paginatedData
+                    .map((item, indx) => (
+                      <TableRow key={indx}>
+                        <TableCell className="max-[450px]:text-xs max-[450px]:max-w-[0px] truncate text-muted-foreground">
+                          {item.NOME_CONDOMINIO}
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell font-medium">
+                          {highlightMatch(item.ANFITRIAO as string, searchTerm)}
+                        </TableCell>
+                        <TableCell>
+                          {item.HORA_CONVITE
+                            ? new Date(`${item.DATA_CONVITE}T${item.HORA_CONVITE}`).toLocaleString('pt-BR', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })
+                            : <span className="text-xs">Não registrado</span>}
+                        </TableCell>
+                        <TableCell>
+                          <Badge className="text-xs" variant={item.DESC_STATUS as CustomVariants}>{item.DESC_STATUS}</Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))
                 ) : (
                   <TableRow>
                     <TableCell colSpan={5} className="h-24 text-center">
@@ -127,12 +200,11 @@ export function DataTable({ data }: DataTableProps) {
           </div>
         </div>
 
-        {/* Pagination */}
-        {data.length > 0 && (
+        {filteredData.length > 0 && (
           <div className="flex items-center justify-between mt-4">
             <p className="text-sm text-muted-foreground">
-              Mostrando {startIndex + 1} a {Math.min(startIndex + itemsPerPage, data.length)} de{" "}
-              {data.length} registros
+              Mostrando {startIndex + 1} a {Math.min(startIndex + itemsPerPage, filteredData.length)} de{" "}
+              {filteredData.length} registros
             </p>
             <div className="flex items-center space-x-2">
               <Button

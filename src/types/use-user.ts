@@ -1,9 +1,9 @@
-import { MOCK_ACCESS_HISTORICAL, MOCK_ADRESSES } from "@/mocks"
+import { Adress, Historical } from "./data"
 
 type load_data = {
     payload: {
-        adresses: typeof MOCK_ADRESSES,
-        historical: typeof MOCK_ACCESS_HISTORICAL
+        adresses: Adress[],
+        historical: Historical[]
     }
     type: "LOAD_DATA"
 }
@@ -14,19 +14,20 @@ type set_loading = {
 }
 
 type set_current = {
-    payload: typeof MOCK_ADRESSES[0]
+    payload: Adress
     type: "SET_CURRENT"
 }
 
 type filter_historical = {
-    payload: typeof MOCK_ACCESS_HISTORICAL
+    payload: Historical[]
     type: "FILTER_HISTORICAL"
 }
 
 export interface InitialStateProps {
-    currentAdress: typeof MOCK_ADRESSES[0] | null
-    adresses: typeof MOCK_ADRESSES | null
-    historical: typeof MOCK_ACCESS_HISTORICAL | null
+    currentAdress: Adress | null
+    adresses: Adress[] | null
+    historical: Historical[] | null
+    filteredHistorical: Historical[] | []
     loading: boolean
 }
 

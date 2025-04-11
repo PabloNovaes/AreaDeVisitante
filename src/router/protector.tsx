@@ -16,8 +16,10 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         init(async () => {
-            const token = c.get("token")
             try {
+                const token = c.get("token")
+                if (!token) return
+
                 const body = { request: "get_perfil_visitante", tipo: "2" }
                 const res = await callApi("POST", { body: body, headers: { Authorization: `Bearer ${token}` } })
 
@@ -26,8 +28,10 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
                 setData({ ...res, TOKEN: token })
                 nav('/home')
             } catch (err) {
-                console.log(err);
-                errorToastDispatcher(err)
+                if (pathname !== '/') {
+                    console.log(err);
+                    errorToastDispatcher(err)
+                }
             }
         })
 

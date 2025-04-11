@@ -16,8 +16,8 @@ interface SaveButtonProps extends HTMLMotionProps<"button"> {
 export const springConfig = {
     type: "spring",
     stiffness: 500,
-    damping: 30,
-    mass: 1,
+    damping: 50,
+    mass: 2,
 }
 
 export function SaveButton({ state = "initial", onSave, className, content, ...props }: SaveButtonProps) {

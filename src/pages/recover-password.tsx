@@ -43,7 +43,7 @@ export function RecoverPassword() {
         docType: z.enum(["cpf", "passaporte"], { message: "Deve selecionar uma das opções" }),
         document: z.string({ message: "O documento é obrigatório" }).superRefine((val, ctx) => {
             if (docType === "passporte") {
-                const passportRegex = /^[A-Z]{1,2}[0-9]{6,9}$/i
+                const passportRegex = /[^a-zA-Z0-9]/g
                 if (!passportRegex.test(val)) {
                     ctx.addIssue({
                         code: z.ZodIssueCode.custom,
@@ -185,7 +185,7 @@ export function RecoverPassword() {
                                                         value={field.value}
                                                         maxLength={docType === "cpf" ? 14 : 12}
                                                         onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                                                            formatInput(e, docType === "cpf" ? formatCPF : (value) => value.toUpperCase())
+                                                            formatInput(e, docType === "cpf" ? formatCPF : (value) => value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase())
                                                             form.setValue("document", e.target.value)
                                                         }}
                                                     />

@@ -2,7 +2,7 @@ import { Info } from "@phosphor-icons/react";
 
 export default function Alert03() {
     return (
-        <div className="w-full mx-auto">
+        <div className="w-full lg:max-w-[83%]">
             <div className="relative overflow-hidden rounded-xl border bg-violet-950/20 border-violet-800/30 p-4 shadow-xs">
                 <div className="flex items-center gap-3">
                     <div className="rounded-full bg-violet-900/50 p-1">
