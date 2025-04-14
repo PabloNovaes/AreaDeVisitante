@@ -3,7 +3,9 @@ import { MOCK_ACCESS_HISTORICAL } from "@/mocks";
 import { Adress, Historical } from "@/types/data";
 import { ActionProps, InitialStateProps } from "@/types/use-user";
 import { errorToastDispatcher } from "@/utils/error-toast-dispatcher";
+import cuid from 'cuid';
 import { useEffect, useReducer } from "react";
+
 import { useAuth } from "./use-auth";
 
 const reducer = (state: InitialStateProps, action: ActionProps): InitialStateProps => {
@@ -57,11 +59,10 @@ export function useUser() {
                 ])
 
                 const inactiveAdresses = MOCK_ACCESS_HISTORICAL
-                    .map(({ NOME_CONDOMINIO, ENDERECO } = DADOS) => ({ CONDOMINIO: NOME_CONDOMINIO, ENDERECO, RESULT: false, BOTAO: false, KEY: '', VISITA: null }))
+                    .map(({ NOME_CONDOMINIO, ENDERECO } = DADOS) => ({ CONDOMINIO: NOME_CONDOMINIO, ENDERECO, RESULT: false, BOTAO: true, KEY: '', VISITA: null, ID: cuid() }))
                     .filter(({ CONDOMINIO }, index, self) => index === self.findIndex((t) => t.CONDOMINIO === CONDOMINIO))
-                console.log([...DADOS, ...inactiveAdresses]);
 
-                dispatch({ type: "LOAD_DATA", payload: { adresses: [...DADOS, ...inactiveAdresses], historical: MOCK_ACCESS_HISTORICAL } })
+                dispatch({ type: "LOAD_DATA", payload: { adresses: [...DADOS.map((item: Adress) => ({ ...item, ID: cuid() })), ...inactiveAdresses], historical: MOCK_ACCESS_HISTORICAL } })
                 dispatch({ type: "SET_CURRENT", payload: DADOS[0] })
             } catch (err) {
                 errorToastDispatcher(err)
@@ -77,7 +78,7 @@ export function useUser() {
         adresses,
         historical,
         filteredHistorical,
-        currentAdress,
+        currentAdress: !currentAdress && adresses ? adresses[0] : currentAdress,
         setCurrentAdress
     }
 }

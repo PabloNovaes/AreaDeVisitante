@@ -22,9 +22,9 @@ const badgeVariants = cva(
         ENTROU:
           "bg-sky-900/20 border-0 text-sky-500/70",
         AUTORIZADO:
-          "bg-emerald-950/40 border-0 text-emerald-500/80",
+          "bg-emerald-900/40 border-0 text-emerald-500/80",
         SAIU:
-          "bg-red-500/20 border-0 text-red-500/90",
+          "bg-red-500/20 border-0 text-red-500/80",
         INFO:
           "bg-amber-500/10  border-0 text-amber-500/80",
       },

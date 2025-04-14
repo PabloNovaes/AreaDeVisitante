@@ -2,9 +2,9 @@ import { useMediaQuery } from "@/hooks/use-media-query"
 import { Info } from "lucide-react"
 import { motion } from "motion/react"
 import { memo } from "react"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog"
-import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from "./ui/drawer"
-import { springConfig } from "./ui/save-button"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog"
+import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from "../ui/drawer"
+import { springConfig } from "../ui/save-button"
 
 const info = {
     title: 'Sobre o uso dos convites de acesso',

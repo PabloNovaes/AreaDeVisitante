@@ -162,4 +162,8 @@
     -webkit-text-fill-color: #ffffff !important;
     -webkit-background-clip: text;
   }
+
+  .custom-scroll::-webkit-scrollbar {
+    width: 0;
+  }
 }

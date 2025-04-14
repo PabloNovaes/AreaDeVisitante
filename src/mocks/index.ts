@@ -520,7 +520,7 @@ export const MOCK_ACCESS_HISTORICAL: Historical[] = [
         "STATUS_ANTECIPACAO": "1",
         "DESC_STATUS": "AUTORIZADO",
         "NOME_CONDOMINIO": "ALLEZYSHOP COMPANY INFORMACAO E TECNOLOGIA LT",
-        "ENDERECO": "ADM, PORTARIA, 00"
+        "ENDERECO": "ADM, PORTARIA, 1"
     },
     {
         "RESULT": "true",
@@ -988,7 +988,7 @@ export const MOCK_ACCESS_HISTORICAL: Historical[] = [
         "STATUS_ANTECIPACAO": "4",
         "DESC_STATUS": "SAIU",
         "NOME_CONDOMINIO": "LOTEAMENTO RESIDENCIAL ALTO DA COLINA",
-        "ENDERECO": "ADM, SUPORTE, 0"
+        "ENDERECO": "ADM, SUPORTE, 2"
     },
     {
         "RESULT": "true",
@@ -1001,7 +1001,7 @@ export const MOCK_ACCESS_HISTORICAL: Historical[] = [
         "STATUS_ANTECIPACAO": "4",
         "DESC_STATUS": "SAIU",
         "NOME_CONDOMINIO": "LOTEAMENTO RESIDENCIAL ALTO DA COLINA",
-        "ENDERECO": "ADM, SUPORTE, 0"
+        "ENDERECO": "ADM, SUPORTE, 3"
     },
     {
         "RESULT": "true",
@@ -1014,7 +1014,7 @@ export const MOCK_ACCESS_HISTORICAL: Historical[] = [
         "STATUS_ANTECIPACAO": "4",
         "DESC_STATUS": "SAIU",
         "NOME_CONDOMINIO": "LOTEAMENTO RESIDENCIAL ALTO DA COLINA",
-        "ENDERECO": "ADM, SUPORTE, 0"
+        "ENDERECO": "ADM, SUPORTE, 4"
     },
     {
         "RESULT": "true",
@@ -1196,7 +1196,7 @@ export const MOCK_ACCESS_HISTORICAL: Historical[] = [
         "STATUS_ANTECIPACAO": "4",
         "DESC_STATUS": "SAIU",
         "NOME_CONDOMINIO": "LOTEAMENTO RESIDENCIAL ALTO DA COLINA",
-        "ENDERECO": "ADM, SUPORTE, 0"
+        "ENDERECO": "ADM, SUPORTE, 5"
     },
     {
         "RESULT": "true",
@@ -1339,7 +1339,7 @@ export const MOCK_ACCESS_HISTORICAL: Historical[] = [
         "STATUS_ANTECIPACAO": "1",
         "DESC_STATUS": "AUTORIZADO",
         "NOME_CONDOMINIO": "ASSOCIACAO ALPHAVILLE GRANJA VIANA",
-        "ENDERECO": "ADM, SUPORTE, 0"
+        "ENDERECO": "ADM, SUPORTE, 6"
     },
     {
         "RESULT": "true",
@@ -1352,7 +1352,7 @@ export const MOCK_ACCESS_HISTORICAL: Historical[] = [
         "STATUS_ANTECIPACAO": "1",
         "DESC_STATUS": "AUTORIZADO",
         "NOME_CONDOMINIO": "ASSOCIACAO ALPHAVILLE GRANJA VIANA",
-        "ENDERECO": "ADM, SUPORTE, 0"
+        "ENDERECO": "ADM, SUPORTE, 7"
     },
     {
         "RESULT": "true",

@@ -10,7 +10,7 @@ import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
 import { AnimatePresence, motion } from "framer-motion"
 import { Check, Loader, QrCode } from "lucide-react"
-import { useEffect, useState } from "react"
+import { memo, useEffect, useState } from "react"
 import { SaveState } from "../ui/save-button"
 
 import {
@@ -23,7 +23,7 @@ import {
     DrawerTitle,
     DrawerTrigger
 } from "@/components/ui/drawer"
-import { DialogTitle } from "@radix-ui/react-dialog"
+import { DialogClose, DialogTitle } from "@radix-ui/react-dialog"
 import { Badge } from "../ui/badge"
 import { Button } from "../ui/button"
 
@@ -31,7 +31,7 @@ import { Button } from "../ui/button"
 export function QrcodeButton() {
     const [currentState, setCurrentState] = useState<SaveState>('initial')
     const [countdown, setCountdown] = useState(0)
-    const [qrcodeViwerOpen, setQrcodeViwerOpen] = useState(false)
+    const [open, setOpen] = useState(false)
 
     const isDesktop = useMediaQuery("(min-width: 1024px)")
 
@@ -46,9 +46,9 @@ export function QrcodeButton() {
     useEffect(() => {
         if (currentState === 'success') {
             setTimeout(() => {
-                setQrcodeViwerOpen(false)
+                setOpen(false)
                 setCurrentState('initial')
-            }, 30 * 1000)
+            }, 30000)
             setTimeout(() => setCurrentState('initial'), 800)
         }
     }, [currentState])
@@ -58,11 +58,15 @@ export function QrcodeButton() {
         await new Promise((res) => setTimeout(() => res(''), 1000))
         setCountdown(31)
         setCurrentState('success')
-        setTimeout(() => setQrcodeViwerOpen(true), 800)
+        setTimeout(() => setOpen(true), 800)
     }
 
+    const CloseButton = memo(() => (
+        <Button onClick={() => setOpen(false)} variant={"secondary"}>Fechar QR code</Button>
+    ))
+
     if (isDesktop) return (
-        <Dialog open={qrcodeViwerOpen}>
+        <Dialog open={open}>
             <DialogTrigger>
                 <motion.div onClick={generateQrcode}
                     className={cn(
@@ -99,19 +103,22 @@ export function QrcodeButton() {
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle className="text-center">Utilize o Qrcode a baixo para entrar <br /> no condominio</DialogTitle>
+                    <DialogDescription className="text-center">
+                        <Badge variant={countdown >= 20 && 'AUTORIZADO' || countdown >= 10 && countdown < 20 && 'INFO' || 'SAIU'} className="text-sm mx-auto">Ira fechar em {countdown}</Badge>
+                    </DialogDescription>
                 </DialogHeader>
                 <img className="mx-auto bg-white p-2 rounded-xl" src="https://codigosdebarrasbrasil.com.br/wp-content/uploads/2019/09/codigo_qr-300x300.png" alt="" />
                 <DialogFooter className="sm:justify-center">
-                    <DialogDescription>
-                        <Badge variant={countdown >= 20 && 'AUTORIZADO' || countdown >= 10 && countdown < 20 && 'INFO' || 'SAIU'} className="text-sm mx-auto">Ira fechar em {countdown}</Badge>
-                    </DialogDescription>
+                    <DialogClose>
+                        <CloseButton />
+                    </DialogClose>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
     )
 
     return (
-        <Drawer open={qrcodeViwerOpen}>
+        <Drawer open={open}>
             <DrawerTrigger>
                 <motion.div onClick={generateQrcode}
                     className={cn(
@@ -157,8 +164,7 @@ export function QrcodeButton() {
                 </div>
                 <DrawerFooter className="text-center">
                     <DrawerClose asChild>
-                        {/* <SaveButton content="Fechar" /> */}
-                        <Button variant={"secondary"}>Fechar QR code</Button>
+                        <CloseButton />
                     </DrawerClose>
                 </DrawerFooter>
             </DrawerContent>

@@ -10,6 +10,7 @@ export type Adress = {
     }[] | null;
     KEY: string;
     BOTAO: boolean;
+    ID: string
 }
 
 export type Historical = {
