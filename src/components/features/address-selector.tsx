@@ -1,7 +1,8 @@
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { useMediaQuery } from "@/hooks/use-media-query"
-import { Adress } from "@/types/data"
+import { cn } from "@/lib/utils"
+import { Address } from "@/types/data"
 import { CheckCircle } from "@phosphor-icons/react"
 import { ChevronsUpDown, Search } from "lucide-react"
 import { useEffect, useState } from "react"
@@ -9,16 +10,16 @@ import { Badge } from "../ui/badge"
 import { Input } from "../ui/input"
 
 interface Props {
-    currentAddress: Adress | null
-    addresses: Adress[] | null
-    onSelect: (adress: Adress) => void
+    currentAddress: Address | null
+    addresses: Address[] | null
+    onSelect: (address: Address) => void
 }
 
 const triggerStyle = `flex items-center justify-between gap-2 py-2 px-4 rounded-2xl h-fit w-fit text-white bg-[#181818] shadow-[inset_0px_1px_0px_0px_rgba(255,255,255,0.2)] cursor-pointer focus-visible:brightness-75 hover:brightness-75 transition-all border border-t-0`
 
 export function AddressSelector({ addresses, currentAddress, onSelect }: Props) {
     const [open, setOpen] = useState(false)
-    const [filteredAddresses, setFilteredAddresses] = useState<Adress[]>(addresses ?? [])
+    const [filteredAddresses, setFilteredAddresses] = useState<Address[]>(addresses ?? [])
 
     const [searchTerm, setSearchTerm] = useState("")
 
@@ -39,7 +40,7 @@ export function AddressSelector({ addresses, currentAddress, onSelect }: Props) 
 
     const isDesktop = useMediaQuery("(min-width: 600px)")
 
-    const handleSelect = (address: Adress) => {
+    const handleSelect = (address: Address) => {
         if (onSelect) {
             onSelect(address)
         }
@@ -49,8 +50,8 @@ export function AddressSelector({ addresses, currentAddress, onSelect }: Props) 
     const Trigger = () => (
         <>
             <div className="text-start">
-                <p className="text-xs line-clamp-1">{currentAddress?.CONDOMINIO}</p>
-                <p className="text-xs text-white/50 line-clamp-1">{currentAddress?.ENDERECO}</p>
+                <p className="text-xs line-clamp-1">{currentAddress?.CONDOMINIO ?? 'Nenhum condominio encontrado'}</p>
+                <p className="text-xs text-white/50 line-clamp-1">{currentAddress?.ENDERECO ?? 'Entre em contato com seu anfitrião'}</p>
             </div>
             <ChevronsUpDown size={14} />
         </>
@@ -58,7 +59,7 @@ export function AddressSelector({ addresses, currentAddress, onSelect }: Props) 
 
     if (isDesktop) return (
         <DropdownMenu open={open} onOpenChange={() => setOpen(prev => !prev)}>
-            <DropdownMenuTrigger className={triggerStyle}>
+            <DropdownMenuTrigger disabled={currentAddress === null} className={cn(triggerStyle)}>
                 <Trigger />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-full rounded-xl">
@@ -103,7 +104,7 @@ export function AddressSelector({ addresses, currentAddress, onSelect }: Props) 
 
     return (
         <Drawer open={open} onOpenChange={() => setOpen(!open)}>
-            <DrawerTrigger className={triggerStyle}>
+            <DrawerTrigger disabled={currentAddress === null} className={triggerStyle}>
                 <Trigger />
             </DrawerTrigger>
             <DrawerContent className="max-h-[85vh] max-sm:">

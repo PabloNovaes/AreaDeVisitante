@@ -4,16 +4,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
-import { Adress, Historical } from "@/types/data"
+import { Address, Historical } from "@/types/data"
 import { AlertCircle, ChevronLeft, ChevronRight, Search, ShieldAlert, ShieldCheck, SlidersHorizontal } from "lucide-react"
+import { AnimatePresence, motion } from "motion/react"
 import { useState } from "react"
 import { Input } from "../ui/input"
 import { AccessDetails } from "./access-details"
+import { QrcodeButton } from "./qrcode-button"
 
 
 interface DataTableProps {
   data: Historical[]
-  currentAdress: Adress
+  currentAdress: Address
 }
 
 export function DataTable({ data, currentAdress }: DataTableProps) {
@@ -55,44 +57,59 @@ export function DataTable({ data, currentAdress }: DataTableProps) {
     )
   }
 
-
   const handleOpenChange = () => setOpenAccessDetails((prev) => !prev)
+  console.log(currentAdress);
 
   return (
     <>
-      <Card className={cn("w-full rounded-2xl shadow-lg sm:flex", currentAdress?.RESULT ? 'lg:col-span-2' : 'lg:col-span-3')}>
+      <Card className={cn("w-full rounded-2xl shadow-lg sm:flex col-span-2")}>
         <CardHeader className="pb-3">
           <CardTitle className="text-xl flex items-center gap-2">
             <SlidersHorizontal className="h-5 w-5" />
-            Registros de Acesso
+            {currentAdress ? 'Registros de Acesso' : 'Não há registros para mostrar'}
           </CardTitle>
           <CardDescription>Visualize e gerencie os registros de acesso ao condomínio.</CardDescription>
         </CardHeader>
-        <div className="border-b border-zinc-800">
-          <div className={`px-6 py-4 flex items-center gap-3 ${currentAdress?.RESULT ? "bg-emerald-950/20" : "bg-red-950/20"}`}>
-            {currentAdress?.RESULT ? (
-              <>
-                <div className="p-3 rounded-full bg-emerald-800">
-                  <ShieldCheck className="h-5 w-5 text-emerald-400" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-emerald-400">Acesso Permitido</h3>
-                  <p className="text-xs text-zinc-400">Você tem permissão para acessar este condomínio</p>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="p-3 rounded-full bg-red-900/60">
-                  <ShieldAlert className="h-5 w-5 text-red-400" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-red-400">Acesso Negado</h3>
-                  <p className="text-xs text-zinc-400">Você não tem permissão para acessar este condomínio</p>
-                </div>
-              </>
-            )}
+        {currentAdress !== null && (
+          <div className="border-b border-zinc-800">
+            <div className={`px-6 py-4 flex items-center justify-between ${currentAdress?.RESULT ? "bg-emerald-950/20" : "bg-red-950/20"}`}>
+              <div className="flex item-center gap-3">
+                {currentAdress?.RESULT ? (
+                  <>
+                    <div className="p-3 rounded-full bg-emerald-800">
+                      <ShieldCheck className="h-5 w-5 text-emerald-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-medium text-emerald-400">Acesso Permitido</h3>
+                      <p className="text-xs text-zinc-400">Você tem permissão para acessar este condomínio</p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="p-3 rounded-full bg-red-900/60">
+                      <ShieldAlert className="h-5 w-5 text-red-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-medium text-red-400">Acesso Negado</h3>
+                      <p className="text-xs text-zinc-400">Você não tem permissão para acessar este condomínio</p>
+                    </div>
+                  </>
+                )}
+              </div>
+              <AnimatePresence mode="wait">
+                {currentAdress?.BOTAO && (
+                  <motion.div
+                    initial={{ y: 30, opacity: 0, scale: .8 }}
+                    animate={{ y: 0, opacity: 1, scale: 1 }}
+                    exit={{ y: 30, opacity: 0, scale: .8 }}
+                  >
+                    <QrcodeButton />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
-        </div>
+        )}
         <CardContent className="flex flex-col">
           <div className="flex flex-row gap-2 mb-3 items-center">
             <div className="relative flex-1 flex items-center">

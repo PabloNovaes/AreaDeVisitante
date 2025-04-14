@@ -1,4 +1,4 @@
-export type Adress = {
+export type Address = {
     CONDOMINIO: string;
     ENDERECO: string;
     RESULT: string;

@@ -1,6 +1,6 @@
 import { callApi } from "@/api.config";
 import { MOCK_ACCESS_HISTORICAL } from "@/mocks";
-import { Adress, Historical } from "@/types/data";
+import { Address, Historical } from "@/types/data";
 import { ActionProps, InitialStateProps } from "@/types/use-user";
 import { errorToastDispatcher } from "@/utils/error-toast-dispatcher";
 import cuid from 'cuid';
@@ -11,14 +11,14 @@ import { useAuth } from "./use-auth";
 const reducer = (state: InitialStateProps, action: ActionProps): InitialStateProps => {
     switch (action.type) {
         case "LOAD_DATA": {
-            const { adresses, historical } = action.payload
-            return { ...state, adresses, historical }
+            const { addresses, historical } = action.payload
+            return { ...state, addresses, historical }
         }
         case "SET_LOADING": {
             return { ...state, loading: action.payload }
         }
         case "SET_CURRENT": {
-            return { ...state, currentAdress: action.payload }
+            return { ...state, currentAddress: action.payload }
         }
         case "FILTER_HISTORICAL": {
             return { ...state, filteredHistorical: action.payload }
@@ -29,26 +29,26 @@ const reducer = (state: InitialStateProps, action: ActionProps): InitialStatePro
 
 export function useUser() {
     const { data: user } = useAuth()
-    const [{ adresses, historical, filteredHistorical, loading, currentAdress }, dispatch] = useReducer(reducer, {
-        adresses: null,
+    const [{ addresses, historical, filteredHistorical, loading, currentAddress }, dispatch] = useReducer(reducer, {
+        addresses: null,
         historical: null,
         filteredHistorical: [],
         loading: false,
-        currentAdress: null
+        currentAddress: null
     })
 
-    const setCurrentAdress = (payload: Adress) => dispatch({ type: "SET_CURRENT", payload })
+    const setCurrentAddress = (payload: Address) => dispatch({ type: "SET_CURRENT", payload })
 
     useEffect(() => {
-        dispatch({ type: "FILTER_HISTORICAL", payload: historical?.filter((record) => record.ENDERECO === currentAdress?.ENDERECO) as Historical[] })
-    }, [currentAdress, historical])
+        dispatch({ type: "FILTER_HISTORICAL", payload: historical?.filter((record) => record.ENDERECO === currentAddress?.ENDERECO) as Historical[] })
+    }, [currentAddress, historical])
 
     useEffect(() => {
         (async () => {
             try {
                 dispatch({ payload: true, type: "SET_LOADING" })
 
-                const [{ DADOS } = adresses] = await Promise.all([
+                const [{ DADOS: data } = addresses] = await Promise.all([
                     callApi("POST", {
                         body: {
                             request: 'get_autorizacoes_recorrente', tipo: 2
@@ -59,11 +59,11 @@ export function useUser() {
                 ])
 
                 const inactiveAdresses = MOCK_ACCESS_HISTORICAL
-                    .map(({ NOME_CONDOMINIO, ENDERECO } = DADOS) => ({ CONDOMINIO: NOME_CONDOMINIO, ENDERECO, RESULT: false, BOTAO: true, KEY: '', VISITA: null, ID: cuid() }))
+                    .map(({ NOME_CONDOMINIO, ENDERECO }) => ({ CONDOMINIO: NOME_CONDOMINIO, ENDERECO, RESULT: false, BOTAO: true, KEY: '', VISITA: null, ID: cuid() }))
                     .filter(({ CONDOMINIO }, index, self) => index === self.findIndex((t) => t.CONDOMINIO === CONDOMINIO))
 
-                dispatch({ type: "LOAD_DATA", payload: { adresses: [...DADOS.map((item: Adress) => ({ ...item, ID: cuid() })), ...inactiveAdresses], historical: MOCK_ACCESS_HISTORICAL } })
-                dispatch({ type: "SET_CURRENT", payload: DADOS[0] })
+                dispatch({ type: "LOAD_DATA", payload: { addresses: data && [...data.map((item: Address) => ({ ...item, ID: cuid() })), ...inactiveAdresses], historical: MOCK_ACCESS_HISTORICAL } })
+                dispatch({ type: "SET_CURRENT", payload: data ? data : null })
             } catch (err) {
                 errorToastDispatcher(err)
             } finally {
@@ -73,12 +73,13 @@ export function useUser() {
     }, [])
 
 
+
     return {
         loading,
-        adresses,
+        addresses,
         historical,
         filteredHistorical,
-        currentAdress: !currentAdress && adresses ? adresses[0] : currentAdress,
-        setCurrentAdress
+        currentAddress,
+        setCurrentAddress
     }
 }

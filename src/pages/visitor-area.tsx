@@ -1,4 +1,3 @@
-import { QrcodeButton } from "@/components/features/qrcode-button"
 
 import { AddressSelector } from "@/components/features/address-selector"
 import { DataTable } from "@/components/features/historic-table"
@@ -8,17 +7,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useAuth } from "@/hooks/use-auth"
 import { useUser } from "@/hooks/use-user"
 import { cn } from "@/lib/utils"
-import { Adress } from "@/types/data"
+import { Address } from "@/types/data"
 import { isToday } from "@/utils/formatters"
 import c from "js-cookie"
-import { Clock, LogOutIcon } from "lucide-react"
-import { AnimatePresence, motion } from "motion/react"
+import { AlertCircle, LogOutIcon } from "lucide-react"
+import { motion } from "motion/react"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 
 
 export function VisitorArea() {
-    const { adresses, filteredHistorical, currentAdress, setCurrentAdress } = useUser()
+    const { addresses, filteredHistorical, currentAddress, setCurrentAddress } = useUser()
     const { data, setData } = useAuth()
 
     const nav = useNavigate()
@@ -71,35 +70,28 @@ export function VisitorArea() {
                 <div className="w-full flex flex-col gap-3">
                     <h1 className="text-2xl sm:text-4xl tracking-tight font-bold ">Confira abaixo suas autorizações de convites recorrentes e histórico de acesso.</h1>
                     <InfoButton />
-                    <div className="flex gap-3 w-full">
-                        <AddressSelector currentAddress={currentAdress as Adress} addresses={adresses} onSelect={setCurrentAdress} />
-                        <AnimatePresence mode="wait">
-                            {currentAdress?.BOTAO && (
-                                <QrcodeButton />
-                            )}
-                        </AnimatePresence>
-                    </div>
+                    <AddressSelector currentAddress={currentAddress as Address} addresses={addresses} onSelect={setCurrentAddress} />
                     <div className="flex flex-col-reverse min-[1100px]:grid min-[1100px]:grid-cols-3 gap-4">
-                        {filteredHistorical && <DataTable currentAdress={currentAdress as Adress} data={filteredHistorical.filter((record) => record.NOME_CONDOMINIO === currentAdress?.CONDOMINIO)} />}
-                        {currentAdress?.RESULT &&
+                        {filteredHistorical && <DataTable currentAdress={currentAddress as Address} data={filteredHistorical.filter((record) => record.NOME_CONDOMINIO === currentAddress?.CONDOMINIO)} />}
+                        {
                             <Card className="shadow-lg rounded-2xl w-full h-fit">
                                 <CardHeader className="pb-3">
                                     <CardTitle className="text-xl flex items-center gap-2">
-                                        <Clock className="h-5 w-5" />
-                                        Horarios de acesso
+                                        {currentAddress ? 'Horarios de acesso' : 'Não há horarios de acesso para mostrar'}
                                     </CardTitle>
-                                    <CardDescription>Abaixo estão os dias e horários em que você pode acessar o condomínio.</CardDescription>
+                                    <CardDescription>
+                                        Abaixo estão os dias e horários em que você pode acessar o condomínio.</CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="rounded-xl border bg-[#121212] overflow-hidden">
-                                        {currentAdress.VISITA && currentAdress.VISITA
+                                        {currentAddress?.VISITA ? currentAddress.VISITA
                                             .filter(({ FAIXA }) => FAIXA !== '')
                                             .map(({ DIA, FAIXA }, index) => (
                                                 <div
                                                     key={DIA}
                                                     className={cn(
                                                         "flex items-center justify-between p-3",
-                                                        index !== (currentAdress?.VISITA as typeof currentAdress.VISITA).filter(({ FAIXA }) => FAIXA !== '').length - 1 && "border-b",
+                                                        index !== (currentAddress?.VISITA as typeof currentAddress.VISITA).filter(({ FAIXA }) => FAIXA !== '').length - 1 && "border-b",
                                                         isToday(DIA) && "bg-[#282828]",
                                                     )}
                                                 >
@@ -118,7 +110,13 @@ export function VisitorArea() {
                                                         </span>
                                                     </div>
                                                 </div>
-                                            ))}
+                                            )) : (
+                                            <div className="flex flex-col items-center justify-center text-muted-foreground py-4">
+                                                <AlertCircle className="h-8 w-8 mb-2" />
+                                                <p>Nenhum registro encontrado</p>
+                                                <p className="text-sm">Tente ajustar os filtros de busca</p>
+                                            </div>
+                                        )}
                                     </div>
                                 </CardContent>
                             </Card>

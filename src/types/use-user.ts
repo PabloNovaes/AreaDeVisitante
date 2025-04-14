@@ -1,8 +1,8 @@
-import { Adress, Historical } from "./data"
+import { Address, Historical } from "./data"
 
 type load_data = {
     payload: {
-        adresses: Adress[],
+        addresses: Address[],
         historical: Historical[]
     }
     type: "LOAD_DATA"
@@ -14,7 +14,7 @@ type set_loading = {
 }
 
 type set_current = {
-    payload: Adress
+    payload: Address
     type: "SET_CURRENT"
 }
 
@@ -24,8 +24,8 @@ type filter_historical = {
 }
 
 export interface InitialStateProps {
-    currentAdress: Adress | null
-    adresses: Adress[] | null
+    currentAddress: Address | null
+    addresses: Address[] | null
     historical: Historical[] | null
     filteredHistorical: Historical[] | []
     loading: boolean
