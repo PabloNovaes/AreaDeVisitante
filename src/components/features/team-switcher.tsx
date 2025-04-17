@@ -44,8 +44,6 @@ export function TeamSwitcher({ className }: TeamSwitcherProps) {
     const handleTeamSelect = (team: Team) => {
         setSelectedTeam(team)
         setOpen(false)
-        // In a real application, you would switch the team context here
-        console.log(`Switched to team: ${team.cond}`)
     }
 
     return (

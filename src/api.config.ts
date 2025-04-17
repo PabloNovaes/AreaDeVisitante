@@ -1,6 +1,5 @@
-interface Props {
+interface Props extends Omit<RequestInit, 'body'> {
     body?: Record<string, string | number | boolean>;
-    headers?: Record<string, string>
 }
 
 const debug = false
@@ -23,14 +22,19 @@ export const BASE_HEADERS = {
 }
 
 export const callApi = async (method: 'GET' | 'POST', { body, headers }: Props) => {
-    const req = await fetch(BASE_URL, {
-        method,
-        body: JSON.stringify(body),
-        headers: {
-            ...BASE_HEADERS,
-            ...(headers && headers)
-        }
-    })
-    const res = await req.json()
-    return res
+    try {
+        const req = await fetch(BASE_URL, {
+            method,
+            body: JSON.stringify(body),
+            headers: {
+                ...BASE_HEADERS,
+                ...(headers && headers)
+            }
+        })
+        const res = await req.json()
+        return res
+    } catch (err) {
+        console.log(err);
+
+    }
 }

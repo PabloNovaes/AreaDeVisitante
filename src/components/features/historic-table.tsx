@@ -58,7 +58,6 @@ export function DataTable({ data, currentAdress }: DataTableProps) {
   }
 
   const handleOpenChange = () => setOpenAccessDetails((prev) => !prev)
-  console.log(currentAdress);
 
   return (
     <>
@@ -73,7 +72,7 @@ export function DataTable({ data, currentAdress }: DataTableProps) {
         {currentAdress !== null && (
           <div className="border-b border-zinc-800">
             <div className={`px-6 py-4 flex items-center justify-between ${currentAdress?.RESULT ? "bg-emerald-950/20" : "bg-red-950/20"}`}>
-              <div className="flex item-center gap-3">
+              <div className="flex items-center gap-3">
                 {currentAdress?.RESULT ? (
                   <>
                     <div className="p-3 rounded-full bg-emerald-800">

@@ -29,7 +29,6 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
                 nav('/home')
             } catch (err) {
                 if (pathname !== '/') {
-                    console.log(err);
                     errorToastDispatcher(err)
                 }
             }

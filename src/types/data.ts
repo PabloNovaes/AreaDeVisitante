@@ -11,6 +11,9 @@ export type Address = {
     KEY: string;
     BOTAO: boolean;
     ID: string
+    RECORRENTE: boolean
+    DATA_INI?: string
+    DATA_FIM?: string
 }
 
 export type Historical = {

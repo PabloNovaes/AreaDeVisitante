@@ -84,3 +84,22 @@ export const dateFormater = (dateString: string) => {
         minute: "2-digit",
     }).format(date)
 }
+
+export const formatPeriod = (inicio: string, fim: string) => {
+    const parse = (str: string) => {
+        const [data, hora] = str.split(' ')
+        const [dia, mes, ano] = data.split('/')
+        const [h, m] = hora.split(':')
+        return new Date(Number(ano), Number(mes) - 1, Number(dia), Number(h), Number(m))
+    }
+
+    const formatter = new Intl.DateTimeFormat("pt-BR", {
+        dateStyle: 'short',
+        timeStyle: 'short'
+    })
+
+    const inicioFormatado = formatter.format(parse(inicio))
+    const fimFormatado = formatter.format(parse(fim))
+
+    return `${inicioFormatado} até ${fimFormatado}`
+}

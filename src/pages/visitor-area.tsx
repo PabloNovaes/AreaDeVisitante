@@ -2,32 +2,21 @@
 import { AddressSelector } from "@/components/features/address-selector"
 import { DataTable } from "@/components/features/historic-table"
 import { InfoButton } from "@/components/features/info-button"
+import { UserProfile } from "@/components/features/user-profile"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuth } from "@/hooks/use-auth"
 import { useUser } from "@/hooks/use-user"
 import { cn } from "@/lib/utils"
 import { Address } from "@/types/data"
-import { isToday } from "@/utils/formatters"
-import c from "js-cookie"
-import { AlertCircle, LogOutIcon } from "lucide-react"
+import { formatPeriod, isToday } from "@/utils/formatters"
+import { AlertCircle } from "lucide-react"
 import { motion } from "motion/react"
-import { useNavigate } from "react-router-dom"
-import { toast } from "sonner"
 
 
 export function VisitorArea() {
     const { addresses, filteredHistorical, currentAddress, setCurrentAddress } = useUser()
-    const { data, setData } = useAuth()
-
-    const nav = useNavigate()
-
-    const logout = async () => {
-        await new Promise((res) => setTimeout(() => res(''), 1200))
-        setData(null)
-        c.remove("token")
-        nav("/")
-    }
+    const { data } = useAuth()
 
     return (
         <main className="relative min-h-svh overflow-hidden grid justify-items-center">
@@ -50,21 +39,14 @@ export function VisitorArea() {
                 className="bg-cover absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-purple-500/20 to-violet-500/10 rounded-full blur-3xl"
             />
             <div className="max-w-[1100px] w-full h-full flex flex-col p-8 z-10 gap-8">
-                <header className="gap-5 flex items-center justify-between w-full ">
+                <header className="gap-5 flex items-center justify-between w-full">
                     <div className="flex gap-3 items-center">
-                        <img src={data?.IMAGEM} className="size-10 object-cover rounded-full" alt="" />
+                        <UserProfile />
                         <div className="grid leading-3.5">
-                            <h1 className="text-xl bg-gradient-to-r from-violet-400 to-violet-200 bg-clip-text font-semibold text-transparent"> {data.NOME} </h1>
-                            <h3 className="font-medium opacity-70 text-xs">{data.EMAIL ? data.EMAIL : "Bem-Vindo a area de visitantes "}</h3>
+                            <h1 className="text-xl bg-gradient-to-r from-violet-400 to-violet-200 bg-clip-text font-semibold text-transparent">Olá {data.NOME} </h1>
+                            <h3 className="font-medium opacity-70 text-xs">Bem-Vindo a area de visitantes</h3>
                         </div>
                     </div>
-                    <button className="bg-[#181818] p-3 border rounded-full text-sm font-light pr-2 flex items-center gap-2 cursor-pointer" onClick={() => toast.promise(logout, {
-                        loading: 'Saindo...',
-                        position: 'bottom-center'
-                    })}>
-                        <LogOutIcon size={15} />
-                        sair
-                    </button>
                     {/* <Alert03 /> */}
                 </header>
                 <div className="w-full flex flex-col gap-3">
@@ -77,14 +59,23 @@ export function VisitorArea() {
                             <Card className="shadow-lg rounded-2xl w-full h-fit">
                                 <CardHeader className="pb-3">
                                     <CardTitle className="text-xl flex items-center gap-2">
-                                        {currentAddress ? 'Horarios de acesso' : 'Não há horarios de acesso para mostrar'}
+                                        {
+                                            currentAddress
+                                                ? (currentAddress.RECORRENTE ? 'Horários de acesso' : 'Período de acesso')
+                                                : 'Nenhum horário de acesso disponível'
+                                        }
                                     </CardTitle>
                                     <CardDescription>
-                                        Abaixo estão os dias e horários em que você pode acessar o condomínio.</CardDescription>
+                                        {
+                                            currentAddress?.RECORRENTE
+                                                ? 'Confira abaixo os dias e horários em que o acesso ao condomínio está permitido.'
+                                                : 'Confira abaixo o período durante o qual você poderá acessar o condomínio.'
+                                        }
+                                    </CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="rounded-xl border bg-[#121212] overflow-hidden">
-                                        {currentAddress?.VISITA ? currentAddress.VISITA
+                                        {currentAddress?.RECORRENTE && currentAddress?.VISITA && currentAddress.VISITA
                                             .filter(({ FAIXA }) => FAIXA !== '')
                                             .map(({ DIA, FAIXA }, index) => (
                                                 <div
@@ -101,16 +92,25 @@ export function VisitorArea() {
                                                                 Hoje
                                                             </Badge>
                                                         )}
-                                                        <span className={cn("font-medium", isToday(DIA) && "text-primary")}>{DIA}</span>
+                                                        <span className={cn("font-medium max-[350px]:hidden", isToday(DIA) && "text-primary")}>{DIA}</span>
                                                     </div>
                                                     <div className="flex items-center gap-2">
-                                                        <span className="text-sm text-muted-foreground">
+                                                        <span className="max-[450px]:text-xs text-muted-foreground">
                                                             {FAIXA}
                                                             {/* {formatTimeRange(startTime, endTime)} */}
                                                         </span>
                                                     </div>
                                                 </div>
-                                            )) : (
+                                            ))
+                                        }
+
+                                        {currentAddress && !currentAddress?.RECORRENTE && (
+                                            <p className="py-3 text-center text-sm text-muted-foreground">
+                                                {formatPeriod(currentAddress.DATA_INI ?? '', currentAddress.DATA_FIM ?? '')}
+                                            </p>
+                                        )}
+
+                                        {!currentAddress && (
                                             <div className="flex flex-col items-center justify-center text-muted-foreground py-4">
                                                 <AlertCircle className="h-8 w-8 mb-2" />
                                                 <p>Nenhum registro encontrado</p>

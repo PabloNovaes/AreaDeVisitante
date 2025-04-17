@@ -20,7 +20,6 @@ export const authContext = createContext<AuthContextProps | undefined>(undefined
 
 export function AuthContextProvider({ children }: { children: ReactNode }) {
     const [data, setData] = useState<null | UserProps>(null)
-    console.log(data);
 
     useEffect(() => {
         const token = c.get("token")

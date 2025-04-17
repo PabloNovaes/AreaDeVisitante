@@ -138,8 +138,6 @@ export function DefineNewPasswordForm({ keyUser }: { keyUser: string }) {
                                         minLength={6}
                                         autoComplete="new-password"
                                         onChange={(e) => {
-                                            console.log(e);
-
                                             field.onChange(e)
                                             handlePasswordChange(e)
                                         }}

@@ -13,6 +13,7 @@ import { Check, Loader, QrCode } from "lucide-react"
 import { memo, useEffect, useState } from "react"
 import { SaveState } from "../ui/save-button"
 
+import { callApi } from "@/api.config"
 import {
     Drawer,
     DrawerClose,
@@ -23,6 +24,9 @@ import {
     DrawerTitle,
     DrawerTrigger
 } from "@/components/ui/drawer"
+import { useAuth } from "@/hooks/use-auth"
+import { useUser } from "@/hooks/use-user"
+import { errorToastDispatcher } from "@/utils/error-toast-dispatcher"
 import { DialogClose, DialogTitle } from "@radix-ui/react-dialog"
 import { Badge } from "../ui/badge"
 import { Button } from "../ui/button"
@@ -31,9 +35,13 @@ import { Button } from "../ui/button"
 export function QrcodeButton() {
     const [currentState, setCurrentState] = useState<SaveState>('initial')
     const [countdown, setCountdown] = useState(0)
+    const [qrcode, setQrcode] = useState(null)
     const [open, setOpen] = useState(false)
 
+    const { currentAddress } = useUser()
+    const { data: user } = useAuth()
     const isDesktop = useMediaQuery("(min-width: 1024px)")
+
 
     useEffect(() => {
         let timer: NodeJS.Timeout
@@ -55,10 +63,27 @@ export function QrcodeButton() {
 
     const generateQrcode = async () => {
         setCurrentState('loading')
-        await new Promise((res) => setTimeout(() => res(''), 1000))
-        setCountdown(31)
-        setCurrentState('success')
-        setTimeout(() => setOpen(true), 800)
+
+        try {
+            const { RESULT, QRCODE, ERROR } = await callApi('POST', {
+                body: {
+                    request: currentAddress?.RECORRENTE ? 'set_gerar_qrcode_recorrente' : 'set_gerar_qrcode_temporario',
+                    temporario: String(currentAddress?.KEY),
+                    tipo: 2
+                },
+                headers: { Authorization: `Bearer ${user["TOKEN"]}` }
+            })
+
+            if (!RESULT) throw new Error(ERROR)
+
+            setQrcode(QRCODE)
+            setCountdown(31)
+            setCurrentState('success')
+            setTimeout(() => setOpen(true), 800)
+        } catch (err) {
+            errorToastDispatcher(err)
+            setCurrentState('initial')
+        }
     }
 
     const CloseButton = memo(() => (
@@ -107,7 +132,7 @@ export function QrcodeButton() {
                         <Badge variant={countdown >= 20 && 'AUTORIZADO' || countdown >= 10 && countdown < 20 && 'INFO' || 'SAIU'} className="text-sm mx-auto">Ira fechar em {countdown}</Badge>
                     </DialogDescription>
                 </DialogHeader>
-                <img className="mx-auto bg-white p-2 rounded-xl" src="https://codigosdebarrasbrasil.com.br/wp-content/uploads/2019/09/codigo_qr-300x300.png" alt="" />
+                <img className="mx-auto bg-white p-2 rounded-xl" src={qrcode ?? ''} alt="" />
                 <DialogFooter className="sm:justify-center">
                     <DialogClose>
                         <CloseButton />
@@ -160,7 +185,7 @@ export function QrcodeButton() {
                     <DrawerDescription>Utilize o Qrcode a baixo para entrar no condominio</DrawerDescription>
                 </DrawerHeader>
                 <div className="">
-                    <img className="mx-auto bg-white p-2 rounded-xl" src="https://codigosdebarrasbrasil.com.br/wp-content/uploads/2019/09/codigo_qr-300x300.png" alt="" />
+                    <img className="mx-auto w-2/3 bg-white rounded-4xl" src={qrcode ?? ''} alt="" />
                 </div>
                 <DrawerFooter className="text-center">
                     <DrawerClose asChild>
