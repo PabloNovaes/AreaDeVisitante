@@ -55,72 +55,70 @@ export function VisitorArea() {
                     <AddressSelector currentAddress={currentAddress as Address} addresses={addresses} onSelect={setCurrentAddress} />
                     <div className="flex flex-col-reverse min-[1100px]:grid min-[1100px]:grid-cols-3 gap-4">
                         {filteredHistorical && <DataTable currentAdress={currentAddress as Address} data={filteredHistorical.filter((record) => record.NOME_CONDOMINIO === currentAddress?.CONDOMINIO)} />}
-                        {
-                            <Card className="shadow-lg rounded-2xl w-full h-fit">
-                                <CardHeader className="pb-3">
-                                    <CardTitle className="text-xl flex items-center gap-2">
-                                        {
-                                            currentAddress
-                                                ? (currentAddress.RECORRENTE ? 'Horários de acesso' : 'Período de acesso')
-                                                : 'Nenhum horário de acesso disponível'
-                                        }
-                                    </CardTitle>
-                                    <CardDescription>
-                                        {
-                                            currentAddress?.RECORRENTE
-                                                ? 'Confira abaixo os dias e horários em que o acesso ao condomínio está permitido.'
-                                                : 'Confira abaixo o período durante o qual você poderá acessar o condomínio.'
-                                        }
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="rounded-xl border bg-[#121212] overflow-hidden">
-                                        {currentAddress?.RECORRENTE && currentAddress?.VISITA && currentAddress.VISITA
-                                            .filter(({ FAIXA }) => FAIXA !== '')
-                                            .map(({ DIA, FAIXA }, index) => (
-                                                <div
-                                                    key={DIA}
-                                                    className={cn(
-                                                        "flex items-center justify-between p-3",
-                                                        index !== (currentAddress?.VISITA as typeof currentAddress.VISITA).filter(({ FAIXA }) => FAIXA !== '').length - 1 && "border-b",
-                                                        isToday(DIA) && "bg-[#282828]",
+                        <Card className="shadow-lg rounded-2xl w-full h-fit">
+                            <CardHeader className="pb-3">
+                                <CardTitle className="text-xl flex items-center gap-2">
+                                    {
+                                        currentAddress
+                                            ? (currentAddress.RECORRENTE ? 'Horários de acesso' : 'Período de acesso')
+                                            : 'Nenhum horário de acesso disponível'
+                                    }
+                                </CardTitle>
+                                <CardDescription>
+                                    {
+                                        currentAddress?.RECORRENTE
+                                            ? 'Confira abaixo os dias e horários em que o acesso ao condomínio está permitido.'
+                                            : 'Confira abaixo o período durante o qual você poderá acessar o condomínio.'
+                                    }
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="rounded-xl border bg-[#121212] overflow-hidden">
+                                    {currentAddress?.RECORRENTE && currentAddress?.VISITA && currentAddress.VISITA
+                                        .filter(({ FAIXA }) => FAIXA !== '')
+                                        .map(({ DIA, FAIXA }, index) => (
+                                            <div
+                                                key={DIA}
+                                                className={cn(
+                                                    "flex items-center justify-between p-3",
+                                                    index !== (currentAddress?.VISITA as typeof currentAddress.VISITA).filter(({ FAIXA }) => FAIXA !== '').length - 1 && "border-b",
+                                                    isToday(DIA) && "bg-[#282828]",
+                                                )}
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    {isToday(DIA) && (
+                                                        <Badge variant="outline" className="bg-primary/10 transition-all">
+                                                            Hoje
+                                                        </Badge>
                                                     )}
-                                                >
-                                                    <div className="flex items-center gap-2">
-                                                        {isToday(DIA) && (
-                                                            <Badge variant="outline" className="bg-primary/10 transition-all">
-                                                                Hoje
-                                                            </Badge>
-                                                        )}
-                                                        <span className={cn("font-medium max-[350px]:hidden", isToday(DIA) && "text-primary")}>{DIA}</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="max-[450px]:text-xs text-muted-foreground">
-                                                            {FAIXA}
-                                                            {/* {formatTimeRange(startTime, endTime)} */}
-                                                        </span>
-                                                    </div>
+                                                    <span className={cn("font-medium max-[350px]:hidden", isToday(DIA) && "text-primary")}>{DIA}</span>
                                                 </div>
-                                            ))
-                                        }
-
-                                        {currentAddress && !currentAddress?.RECORRENTE && (
-                                            <p className="py-3 text-center text-sm text-muted-foreground">
-                                                {formatPeriod(currentAddress.DATA_INI ?? '', currentAddress.DATA_FIM ?? '')}
-                                            </p>
-                                        )}
-
-                                        {!currentAddress && (
-                                            <div className="flex flex-col items-center justify-center text-muted-foreground py-4">
-                                                <AlertCircle className="h-8 w-8 mb-2" />
-                                                <p>Nenhum registro encontrado</p>
-                                                <p className="text-sm">Tente ajustar os filtros de busca</p>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="max-[450px]:text-xs text-muted-foreground">
+                                                        {FAIXA}
+                                                        {/* {formatTimeRange(startTime, endTime)} */}
+                                                    </span>
+                                                </div>
                                             </div>
-                                        )}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        }
+                                        ))
+                                    }
+
+                                    {currentAddress && !currentAddress?.RECORRENTE && (
+                                        <p className="py-3 text-center text-sm text-muted-foreground">
+                                            {formatPeriod(currentAddress.DATA_INI ?? '', currentAddress.DATA_FIM ?? '')}
+                                        </p>
+                                    )}
+
+                                    {!currentAddress && (
+                                        <div className="flex flex-col items-center justify-center text-muted-foreground py-4">
+                                            <AlertCircle className="h-8 w-8 mb-2" />
+                                            <p>Nenhum registro encontrado</p>
+                                            <p className="text-sm">Tente ajustar os filtros de busca</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
 
                     </div>
                 </div>

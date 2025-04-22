@@ -61,7 +61,7 @@ export function DataTable({ data, currentAdress }: DataTableProps) {
 
   return (
     <>
-      <Card className={cn("w-full rounded-2xl shadow-lg sm:flex col-span-2")}>
+      <Card className={cn("w-full rounded-2xl shadow-lg sm:flex col-span-2 h-fit")}>
         <CardHeader className="pb-3">
           <CardTitle className="text-xl flex items-center gap-2">
             <SlidersHorizontal className="h-5 w-5" />

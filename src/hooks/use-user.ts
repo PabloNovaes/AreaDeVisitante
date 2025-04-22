@@ -5,7 +5,6 @@ import { errorToastDispatcher } from "@/utils/error-toast-dispatcher";
 import cuid from 'cuid';
 import { useEffect, useReducer } from "react";
 
-import { MOCK_ACCESS_HISTORICAL } from "@/mocks";
 import { useAuth } from "./use-auth";
 
 const reducer = (state: InitialStateProps, action: ActionProps): InitialStateProps => {
@@ -56,7 +55,7 @@ export function useUser() {
             try {
                 dispatch({ payload: true, type: "SET_LOADING" })
 
-                const [recurrent, temporary] = await Promise.all([
+                const [recurrent, temporary, historical] = await Promise.all([
                     callApi("POST", {
                         body: { request: 'get_autorizacoes_recorrente', tipo: 2 },
                         headers: { Authorization: `Bearer ${user["TOKEN"]}` }
@@ -65,10 +64,13 @@ export function useUser() {
                         body: { request: 'get_autorizacoes_temporario', tipo: 2 },
                         headers: { Authorization: `Bearer ${user["TOKEN"]}` }
                     }),
-                    callApi("POST", { body: { request: 'get_registros_visitante' } })
+                    callApi("POST", {
+                        body: { request: 'get_registros_visitante', tipo: 2 },
+                        headers: { Authorization: `Bearer ${user["TOKEN"]}` }
+                    })
                 ])
 
-                const inactiveAdresses = MOCK_ACCESS_HISTORICAL.map(({ NOME_CONDOMINIO, ENDERECO }) => ({
+                const inactiveAdresses = (historical.DADOS as Historical[]).map(({ NOME_CONDOMINIO, ENDERECO }) => ({
                     CONDOMINIO: NOME_CONDOMINIO,
                     ID: cuid(),
                     RESULT: false,
@@ -81,7 +83,7 @@ export function useUser() {
 
                 dispatch({
                     type: "LOAD_DATA", payload: {
-                        historical: MOCK_ACCESS_HISTORICAL,
+                        historical: (historical.DADOS as Historical[]),
                         addresses: [
                             ...recurrent.RESULT ? recurrent.DADOS.map((item: Address) => ({ ...item, ID: cuid(), RECORRENTE: true })) : [],
                             ...temporary.RESULT ? temporary.DADOS.map((item: Address) => ({ ...item, BOTAO: true, ID: cuid(), RECORRENTE: false })) : [],
